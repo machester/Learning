@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     pthread_t thread_tid;
     struct clien_info *temp;
 
-    whiel(1)
+    while(1)
     {
         int tcp_socket_newfd = accept(tcp_socket_fd, NULL, NULL);
         if (tcp_socket_newfd < 0)
