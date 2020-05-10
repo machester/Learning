@@ -27,6 +27,10 @@
 #include <linux/notifier.h>
 #include <linux/fb.h>
 
+#define WIDTH				1080
+#define HEIGHT				1920
+
+
 struct virtual_tp {
 	dev_t devno ;
 	struct device* temp;
@@ -65,17 +69,31 @@ static long vtp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if(vtp->vtp_input_dev){
 		//input_report_abs(vtp->vtp_input_dev, ABS_X, data[0]);
 		//input_report_abs(vtp->vtp_input_dev, ABS_Y, data[1]);
+		
+	#if 1
+		input_mt_slot();
 		input_mt_report_slot_state(vtp->vtp_input_dev, MT_TOOL_FINGER, true);
 		input_report_abs(vtp->vtp_input_dev, ABS_MT_POSITION_X, data[0]);
 		input_report_abs(vtp->vtp_input_dev, ABS_MT_POSITION_Y, data[1]);
 		input_report_abs(vtp->vtp_input_dev, ABS_MT_TOUCH_MAJOR, 150);
 		//input_report_key(vtp->vtp_input_dev, BTN_TOUCH, 1);
 		input_sync(vtp->vtp_input_dev);
-		mdelay(20);
+		mdelay(10);
 		//input_report_key(vtp->vtp_input_dev, BTN_TOUCH, 0);
 		input_mt_report_slot_state(vtp->vtp_input_dev, MT_TOOL_FINGER, false);
 		input_sync(vtp->vtp_input_dev);
-		
+	#else
+		input_mt_report_slot_state(vtp->vtp_input_dev, MT_TOOL_FINGER, true);
+		input_report_abs(vtp->vtp_input_dev, ABS_MT_POSITION_X, data[0]);
+		input_report_abs(vtp->vtp_input_dev, ABS_MT_POSITION_Y, data[1]);
+		input_report_abs(vtp->vtp_input_dev, ABS_MT_TOUCH_MAJOR, 150);
+		//input_report_key(vtp->vtp_input_dev, BTN_TOUCH, 1);
+		input_sync(vtp->vtp_input_dev);
+		mdelay(10);
+		//input_report_key(vtp->vtp_input_dev, BTN_TOUCH, 0);
+		input_mt_report_slot_state(vtp->vtp_input_dev, MT_TOOL_FINGER, false);
+		input_sync(vtp->vtp_input_dev);
+	#endif
 		}
 		break;
 	default:
@@ -138,18 +156,14 @@ static int __init virtTp_init(void)
 	
 	vtp->vtp_input_dev->evbit[0] = BIT_MASK(EV_ABS) | BIT_MASK(EV_KEY)| BIT_MASK(EV_SYN);
 	input_set_capability(vtp->vtp_input_dev, EV_KEY, BTN_TOUCH);
-	
-	input_set_abs_params(vtp->vtp_input_dev, ABS_X, 0, 1920, 0, 0);
-	input_set_abs_params(vtp->vtp_input_dev, ABS_Y, 0, 1080, 0, 0);
-	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_POSITION_X,
-			     0, 1920, 0, 0);
-	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_POSITION_Y,
-			     0, 1080, 0, 0);
-	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_TOUCH_MAJOR,
-			     0, 255, 0, 0);
-	input_set_abs_params(vtp->vtp_input_dev,ABS_MT_WIDTH_MAJOR,
-				0, 200, 0, 0);
-	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_TRACKING_ID,0,5,0,0);
+	//对于X轴范围是-1024到+1024，数据误差是-2到+2，中心平滑位置是0 
+	input_set_abs_params(vtp->vtp_input_dev, ABS_X, 0, WIDTH, 2, 0);
+	input_set_abs_params(vtp->vtp_input_dev, ABS_Y, 0, HEIGHT, 2, 0);
+	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_POSITION_X, 0, WIDTH, 0, 0);
+	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_POSITION_Y,  0, HEIGHT, 0, 0);
+	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
+	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_WIDTH_MAJOR, 0, 255, 0, 0);
+	input_set_abs_params(vtp->vtp_input_dev, ABS_MT_TRACKING_ID, 0, 255, 0, 0);
 	
 	vtp->vtp_input_dev->name = "vtp";
 	//vtp->vtp_input_dev->phys = "vtp/input0";
