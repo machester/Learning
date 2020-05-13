@@ -131,6 +131,12 @@ static long virtual_ioctl(struct file *filp, unsigned int cmd,
             #ifdef SWAP_XY
                 GTP_SWAP(data[0], data[1]);
             #endif
+			#if INVERT_X
+				GTP_INVERT_X(data[0]);
+			#endif
+			#if INVERT_Y
+				GTP_INVERT_Y(data[1]);
+			#endif 
                 printk(KERN_ERR "copy data[0]=%d,data[1]=%d\n",data[0],data[1]);
             if(inputDev){
                 input_report_key(inputDev, BTN_TOUCH, 1); // 按下
