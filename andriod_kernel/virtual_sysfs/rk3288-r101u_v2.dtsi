@@ -1,0 +1,31 @@
+
+/{
+	output_vol_ctrl: output-vol-ctrl {
+		compatible = "rockchip,output_vol_ctrl";
+		status = "okay";
+		
+		dc_out1-gpio = <&gpio7 RK_PA4 GPIO_ACTIVE_HIGH>;
+		hdmi-pwr-ctrl-gpio = <&gpio0 RK_PA7 GPIO_ACTIVE_HIGH>;
+	};
+	board_beep: board-beep {
+		compatible = "rockchip,board_beep";
+		status = "okay";
+
+		beep-ctrl = <&gpio7 RK_PB4 GPIO_ACTIVE_HIGH>;
+	};
+	rk3288_adc_battery: rk3288-adc-battery {
+		compatible = "rk3288-adc-battery";
+		status = "okay";
+
+		io-channels = <&saradc 0>;
+		// adc sample voltage to battery input voltage
+		lower-limit-vol-mv = <920>;		// 10.2V
+		middle-limit-vol-mv = <1012>;	// 11.1V
+		upper-limit-vol-mv = <1117>;	// 12.3V
+		shutdown-vol-mv = <880>;		// 9.8V
+
+		report-interval-ms = <2000>;
+
+		dc_check-gpio = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
+	};
+};
