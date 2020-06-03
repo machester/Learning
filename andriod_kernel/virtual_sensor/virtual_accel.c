@@ -286,37 +286,42 @@ static struct sensor_config_info gsensor_info = {
 // 	}
 // }
 
-static int bma250_smbus_read_byte(struct i2c_client *client,
-		unsigned char reg_addr, unsigned char *data)
-{
-	s32 dummy;
-	dummy = i2c_smbus_read_byte_data(client, reg_addr);
-	if (dummy < 0)
-		return -1;
-	*data = dummy & 0x000000ff;
+// static int bma250_smbus_read_byte(struct i2c_client *client,
+// 		unsigned char reg_addr, unsigned char *data)
+// {
+// 	s32 dummy;
+// 	dummy = i2c_smbus_read_byte_data(client, reg_addr);
+// 	if (dummy < 0)
+// 		return -1;
+// 	*data = dummy & 0x000000ff;
 
-	return 0;
-}
+// 	return 0;
+// }
 
-static int bma250_smbus_write_byte(struct i2c_client *client,
-		unsigned char reg_addr, unsigned char *data)
-{
-	s32 dummy;
-	dummy = i2c_smbus_write_byte_data(client, reg_addr, *data);
-	if (dummy < 0)
-		return -1;
-	return 0;
-}
+// static int bma250_smbus_write_byte(struct i2c_client *client,
+// 		unsigned char reg_addr, unsigned char *data)
+// {
+// 	s32 dummy;
+// 	dummy = i2c_smbus_write_byte_data(client, reg_addr, *data);
+// 	if (dummy < 0)
+// 		return -1;
+// 	return 0;
+// }
 
-static int bma250_smbus_read_byte_block(struct i2c_client *client,
-		unsigned char reg_addr, unsigned char *data, unsigned char len)
-{
-	s32 dummy;
-	dummy = i2c_smbus_read_i2c_block_data(client, reg_addr, len, data);
-	if (dummy < 0)
-		return -1;
-	return 0;
-}
+// static int bma250_smbus_read_byte_block(struct i2c_client *client,
+// 		unsigned char reg_addr, unsigned char *data, unsigned char len)
+// {
+// 	s32 dummy;
+// 	dummy = i2c_smbus_read_i2c_block_data(client, reg_addr, len, data);
+// 	if (dummy < 0)
+// 		return -1;
+// 	return 0;
+// }
+
+#define  COMPRES		((6)u)
+#define  X_VAL			((0)u)
+#define  Y_VAL			((0xffffffff)u)
+#define	 Z_VAL			((0xf9)u)
 
 static int bma250_set_mode(struct i2c_client *client, unsigned char Mode)
 {
@@ -447,32 +452,32 @@ static int bma250_set_bandwidth(struct i2c_client *client, unsigned char BW)
 	} else{
 		if (BW < 8) {
 			switch (BW) {
-			case 0:
-				Bandwidth = BMA250_BW_7_81HZ;
-				break;
-			case 1:
-				Bandwidth = BMA250_BW_15_63HZ;
-				break;
-			case 2:
-				Bandwidth = BMA250_BW_31_25HZ;
-				break;
-			case 3:
-				Bandwidth = BMA250_BW_62_50HZ;
-				break;
-			case 4:
-				Bandwidth = BMA250_BW_125HZ;
-				break;
-			case 5:
-				Bandwidth = BMA250_BW_250HZ;
-				break;
-			case 6:
-				Bandwidth = BMA250_BW_500HZ;
-				break;
-			case 7:
-				Bandwidth = BMA250_BW_1000HZ;
-				break;
-			default:
+				case 0:
+					Bandwidth = BMA250_BW_7_81HZ;
 					break;
+				case 1:
+					Bandwidth = BMA250_BW_15_63HZ;
+					break;
+				case 2:
+					Bandwidth = BMA250_BW_31_25HZ;
+					break;
+				case 3:
+					Bandwidth = BMA250_BW_62_50HZ;
+					break;
+				case 4:
+					Bandwidth = BMA250_BW_125HZ;
+					break;
+				case 5:
+					Bandwidth = BMA250_BW_250HZ;
+					break;
+				case 6:
+					Bandwidth = BMA250_BW_500HZ;
+					break;
+				case 7:
+					Bandwidth = BMA250_BW_1000HZ;
+					break;
+				default:
+						break;
 			}
 			comres = bma250_smbus_read_byte(client,
 					BMA250_BANDWIDTH__REG, &data);
