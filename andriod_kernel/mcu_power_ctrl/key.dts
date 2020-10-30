@@ -1,0 +1,24 @@
+
+   /********************************************************************
+   （2）Power key 接P0.4（关机：P4.2为低电平时按键3秒，P5.3输出高电平；开机：P4.2为高电平时按键3秒，P4.4输出高电平）
+    RK_PA6 默认低，对应 mcu P4.2 为高
+    P5.3 输出高对应 rk3288 gpio0B6 为高
+    开机 mcu p4.4 对应DC-DC芯片控制脚，不用控制
+    
+   *********************************************************************/
+   
+   
+    keys {
+        compatible = "rockchip,pwr-ctrl-keys";
+        status = "okay";
+        pwr-ctrl-keys {
+            pwr-key = <&gpio8 RK_PA6 GPIO_ACTIVE_HIGH>;
+            label = "control";
+        };
+        pwr-off {
+            pwr-key = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+            label = "power";
+            linux,code = <116>;
+        };
+    };
+    

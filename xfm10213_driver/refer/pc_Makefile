@@ -1,0 +1,59 @@
+# if signature error
+# CONFIG_MODULE_SIG=n
+
+ifneq ($(KERNELRELEASE),)
+	MODULE_NAME = oled_driver
+	${MODULE_NAME}_module-objs := 	oled_driver.o \
+									oled_operation.o
+	obj-m := ${MODULE_NAME}_module.o
+
+else
+# ------------------------------------------------------- #
+# get system verison
+KVERS = $(shell uname -r)
+# module install name
+MODULE_NAME = oled_driver
+
+CC=gcc -Wall
+# module test app name
+APP_NAME = app_${MODULE_NAME}
+
+# get system verison
+KVERS := $(shell uname -r)
+# get driver floder path
+CUR_DIR := $(shell pwd)
+# Specify flags for the module compilation.
+#EXTRA_CFLAGS=-g -O0
+
+all: modules
+modules:
+	make -C /lib/modules/$(KVERS)/build M=$(CUR_DIR) modules
+	@echo "---> kernel_modules build finished."
+
+app :
+	$(CC) $(APP_NAME).c -o $(APP_NAME)
+	@echo "---> app build finished."
+
+cleanall :
+	make -C /lib/modules/$(KVERS)/build M=$(CURDIR) clean
+	rm -rvf $(APP_NAME)
+	rm -rvf .*.?.sw?p
+	rm -rvf .*.?.swp
+	@echo "---> all clean."
+
+clean:
+	@echo "---> clean trash file."
+	rm -rvf .*.?.sw?p .*.?.swp *.o *.*.o .*.cmd .tmp_versions *.mod.c Module.symvers modules.order
+	@echo "---> clean finished."
+
+install:
+	@echo "---> install module ${MODULE_NAME}_module.ko"
+	$(shell sudo insmod ${MODULE_NAME}_module.ko)
+remove:
+	@echo "---> remove module ${MODULE_NAME}_module"
+	$(shell sudo rmmod ${MODULE_NAME}_module)
+
+.PHONY: modules cleanall clean install remove
+endif
+#-------------------- END LINE --------------------------
+#

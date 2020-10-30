@@ -1,0 +1,160 @@
+
+/dts-v1/;
+#include "rk3288-r100u-def.dtsi"
+
+// #include "rk3288-r100u-edp-10p1inch-1920x1080.dtsi"
+// #include "rk3288-r100u-edp-15p6inch-1920x1080.dtsi"
+// #include "rk3288-r100u-lvds-21p5inch-1920x1080.dtsi"
+// #include "rk3288-r100u-mipi-10inch-1920x1080.dtsi"
+// #include "rk3288-r100u-mipi-8inch-800x1280.dtsi"
+// #include "rk3288-r100u-mipi-ccccc-8inch-800x1280.dtsi"
+#include "rk3288-r100u-mipi_to_edp.dtsi"
+
+/ {
+	compatible = "rockchip,rk3288-evb-android-rk808-edp", "rockchip,rk3288";
+   /** start : default system power-key -----------------------------------------------*/
+    rk_key: rockchip-key {
+    		compatible = "rockchip,key";
+    		status = "okay";
+    		power-key {
+    			gpios = <&gpio0 5 GPIO_ACTIVE_LOW>;      // system default power key port
+    			linux,code = <116>;
+    			pinctrl-names = "default";
+    			pinctrl-0 = <&pwrbtn>;
+    			label = "power";
+    			gpio-key,wakeup;
+    		};
+    	};
+    /** end : default system power-key -----------------------------------------------*/
+    leds {
+        compatible = "gpio-leds";
+        status = "okay";
+        led0:led-control {
+            label = "led_control";
+            gpios = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;			// change trigger mode to timer, suitable reboot test requirement. default on.
+            default-state = "on";
+            linux,default-trigger = "timer";
+            // no paramter for default led status is on
+        };
+         led1:led-pwr {
+            label = "led-pwr";
+	    gpios = <&gpio7 RK_PA5 GPIO_ACTIVE_HIGH>;			// led red
+            default-state = "on";
+        };
+    };
+};
+
+&usbphy {
+	status = "okay";
+};
+
+&usb_host0_ehci {
+	rockchip-relinquish-port;
+	status = "okay";
+};
+
+&usb_host0_ohci {
+	status = "okay";
+};
+
+&usb_otg {
+	status = "okay";
+};
+
+// for kernel driver camera part
+// &isp {
+//     status = "disabled";
+//     camera_power = <&gpio0 RK_PC1 GPIO_ACTIVE_HIGH>;
+// };
+
+/** start usb host mode set ------------------------------------------------------*/
+&usb_host1 {
+	status = "okay";
+};
+
+&usb_hsic {
+    status = "okay";
+};
+
+/** end usb host mode set --------------------------------------------------------*/
+
+&vopb {
+	status = "okay";
+};
+
+&vopb_mmu {
+	status = "okay";
+};
+
+&vopl {
+	status = "okay";
+};
+
+&vopl_mmu {
+	status = "okay";
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_xfer &uart0_cts>;
+	status = "okay";
+};
+
+&uart1 {
+    status = "okay";
+};
+
+&uart2 {
+	status = "disabled";
+};
+
+&uart3 {
+    status = "okay";
+    // rs485-ctrl-gpio = <&gpio7 RK_PC0 GPIO_ACTIVE_HIGH>;
+};
+
+&uart4 {
+    status = "okay";
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <100000>; // decode chip i2c speed max 100KHz
+    
+	stk8b@18 {
+		compatible = "gs_stk8baxx";
+		status = "okay";
+		reg = <0x18>;
+        type = <SENSOR_TYPE_ACCEL>;
+        irq-gpio = <&gpio8 RK_PA0 GPIO_ACTIVE_HIGH>;
+        irq_enable = <0>;
+        poll_delay_ms = <30>;
+        layout = <7>;
+	};
+};
+
+&i2c3 {
+	status = "okay";
+};
+
+&i2c4 {
+	status = "okay";
+	clock-frequency = <400000>;
+    
+	ilitek@41 {
+        compatible = "tchip,ilitek";
+        reg = <0x41>;
+        screen_max_x = <1080>;
+        screen_max_y = <1920>;
+        ilitek,irq-gpio = <&gpio7 6 IRQ_TYPE_LEVEL_LOW>;
+        ilitek,reset-gpio = <&gpio7 5 GPIO_ACTIVE_HIGH>;
+    };
+};
+
+&pinctrl {
+    buttons {
+		pwrbtn: pwrbtn {
+			rockchip,pins = <0 5 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};

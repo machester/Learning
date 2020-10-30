@@ -1,0 +1,31 @@
+/*-------------------- way 1: of get gpio start ------------------------*/
+// DTS configuration add to rk3288-miniarm.dts
+// 0.91 inch oled 128x64
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+    // ss1306 device id = ((ox3c << 1) | write_read_flag) 
+    // 0x3c = 0x78 >> 1
+    pinctrl-names = "default";
+    pinctrl-0 = <&i2c1_xfer>;
+    
+    oled: ss1306@3c {
+        compatible = "oled,ssd1306";
+        reg = <0x3c>;
+        width = <128>;
+        height = <64>;
+        oled-rst = <&gpio6 RK_PA1 GPIO_ACTIVE_HIGH>;  // GPIO6A1
+        page-offset = <0>;
+        status = "okay";
+    };
+};
+&pinctrl {
+    // set i2c1 gpio to pullup, defalut voltage level to high
+    i2c1 {
+        i2c1_xfer: i2c1-xfer {
+            rockchip,pins = <8 4 RK_FUNC_1 &pcfg_pull_up_drv_8ma>,
+                            <8 5 RK_FUNC_1 &pcfg_pull_up_drv_8ma>;
+        };
+    };
+};
+/*-------------------- way 1: of get gpio end ------------------------*/

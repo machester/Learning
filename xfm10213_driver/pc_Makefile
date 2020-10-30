@@ -1,0 +1,37 @@
+# get system verison
+KVERS = $(shell uname -r)
+# get driver floder path
+CURDIR := $(shell pwd)
+# module install name
+MODULE_NAME = sysfs_demo
+# Kernel modules
+obj-m += ${MODULE_NAME}.o
+# Specify flags for the module compilation.
+#EXTRA_CFLAGS=-g -O0
+CC = gcc -Wall
+APPLICATION_NAME = app_${MODULE_NAME}
+temp += ${MODULE_NAME}.ko 
+all : kernel_modules
+kernel_modules:
+	make -C /lib/modules/$(KVERS)/build M=$(CURDIR) modules
+	@echo "---> build finished."
+app:
+	@echo "---> make application ${APPLICATION_NAME}"
+	$(CC) -o ${APPLICATION_NAME} ${APPLICATION_NAME}.c
+cleanall:
+	make -C /lib/modules/$(KVERS)/build M=$(CURDIR) clean
+	rm -rvf .*.?.sw?p 
+	rm -rvf .*.?.swp 
+	rm -rvf ${APPLICATION_NAME}
+	@echo "---> all clean"
+clean:
+	@echo "---> clean trash file."
+	rm -rvf .*.?.sw?p .*.?.swp *.o *.*.o .*.cmd .tmp_versions *.mod.c Module.symvers modules.order
+install:
+	@echo "---> install module $(temp)"
+	$(shell sudo insmod $(temp))
+remove:
+	@echo "---> remove module $(MODULE_NAME)"
+	$(shell sudo rmmod $(MODULE_NAME))
+.PHONY: kernel_modules app cleanall clean install remove
+# ------------------------------- END LINE -----------------------------------------
