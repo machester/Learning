@@ -1,4 +1,4 @@
-
+# -*- coding: UTF-8 -*-
 #-------- for time function ----------------
 import sys
 import time

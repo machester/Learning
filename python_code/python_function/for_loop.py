@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import sys
 
 # for loop rang from 1 to 10, step is 1
